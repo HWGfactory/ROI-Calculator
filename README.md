@@ -41,8 +41,8 @@ B2B SaaS 영업 현장에서 AE(Account Executive)가 가장 어려운 순간 �
 
 | 필드 | 설명 |
 |------|------|
-| 솔루션 회사명 | 예: AB180, 히츠, Salesforce |
-| 솔루션 이름 | 예: Airbridge, HyperLab, Sales Cloud |
+| 솔루션 회사명 | 예: Salesforce, ServiceNow |
+| 솔루션 이름 | 예: Salesforce, SAP, ServiceNow |
 | 솔루션 카테고리 | MarTech / BioTech / CRM / ERP / Security / 기타 |
 
 > 카테고리 선택에 따라 업계 벤치마크 개선율이 다르게 적용됩니다.
