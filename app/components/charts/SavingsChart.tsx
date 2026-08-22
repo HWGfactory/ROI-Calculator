@@ -10,11 +10,13 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
+import { formatCurrency } from '@/lib/calculator';
 import { MonthlyDataPoint } from '@/lib/types';
 
 interface SavingsChartProps {
   monthlyData: MonthlyDataPoint[];
   paybackMonths: number;
+  currency: string;
 }
 
 const LINE_COLOR = '#1B4FFF';
@@ -23,6 +25,7 @@ const BREAK_EVEN_COLOR = '#d03b3b';
 export default function SavingsChart({
   monthlyData,
   paybackMonths,
+  currency,
 }: SavingsChartProps) {
   const breakEvenMonth =
     paybackMonths >= 1 && paybackMonths <= 12 ? paybackMonths : null;
@@ -35,7 +38,7 @@ export default function SavingsChart({
       <ResponsiveContainer width="100%" height={260}>
         <LineChart
           data={monthlyData}
-          margin={{ top: 10, right: 20, bottom: 0, left: 0 }}
+          margin={{ top: 26, right: 20, bottom: 0, left: 0 }}
         >
           <CartesianGrid stroke="#e1e0d9" vertical={false} />
           <XAxis
@@ -46,7 +49,7 @@ export default function SavingsChart({
             tickLine={false}
           />
           <YAxis
-            tickFormatter={(v: number) => `₩${v.toLocaleString('ko-KR')}`}
+            tickFormatter={(v: number) => formatCurrency(v, currency)}
             tick={{ fill: '#898781', fontSize: 11 }}
             axisLine={{ stroke: '#c3c2b7' }}
             tickLine={false}
@@ -54,7 +57,7 @@ export default function SavingsChart({
           />
           <Tooltip
             formatter={(value) => [
-              `₩${Number(value).toLocaleString('ko-KR')}`,
+              formatCurrency(Number(value), currency),
               '누적 절감액',
             ]}
             labelFormatter={(label) => `${label}월`}

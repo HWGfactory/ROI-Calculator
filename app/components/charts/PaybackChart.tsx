@@ -10,10 +10,12 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
+import { formatCurrency } from '@/lib/calculator';
 
 interface PaybackChartProps {
   monthlySavings: number;
   fee: number;
+  currency: string;
 }
 
 const SAVINGS_COLOR = '#0ca30c';
@@ -27,6 +29,7 @@ const SERIES_LABELS: Record<string, string> = {
 export default function PaybackChart({
   monthlySavings,
   fee,
+  currency,
 }: PaybackChartProps) {
   const data = Array.from({ length: 12 }, (_, i) => {
     const month = i + 1;
@@ -58,7 +61,7 @@ export default function PaybackChart({
             tickLine={false}
           />
           <YAxis
-            tickFormatter={(v: number) => `₩${v.toLocaleString('ko-KR')}`}
+            tickFormatter={(v: number) => formatCurrency(v, currency)}
             tick={{ fill: '#898781', fontSize: 11 }}
             axisLine={{ stroke: '#c3c2b7' }}
             tickLine={false}
@@ -66,7 +69,7 @@ export default function PaybackChart({
           />
           <Tooltip
             formatter={(value, name) => [
-              `₩${Number(value).toLocaleString('ko-KR')}`,
+              formatCurrency(Number(value), currency),
               SERIES_LABELS[String(name)] ?? String(name),
             ]}
             labelFormatter={(label) => `${label}월`}

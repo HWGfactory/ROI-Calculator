@@ -1,6 +1,6 @@
 'use client';
 
-import { DEFAULT_EXCHANGE_RATES } from '@/lib/constants';
+import { formatCurrency, formatPaybackPeriod } from '@/lib/calculator';
 import { CustomerInput, ROIResult, SolutionInfo } from '@/lib/types';
 import BeforeAfterChart from './charts/BeforeAfterChart';
 import PaybackChart from './charts/PaybackChart';
@@ -71,10 +71,6 @@ const COMPANY_SIZE_LABELS: Record<CustomerInput['companySize'], string> = {
   over500: '500명+',
 };
 
-function formatWon(value: number) {
-  return `₩${Math.round(value).toLocaleString('ko-KR')}`;
-}
-
 function formatPct(value: number) {
   return `${Math.round(value)}%`;
 }
@@ -134,7 +130,6 @@ export default function ResultDashboard({
   onReset,
 }: ResultDashboardProps) {
   const roiSign = result.roiPct >= 0 ? '+' : '';
-  const rate = DEFAULT_EXCHANGE_RATES[customer.currency] ?? 1;
 
   return (
     <div
@@ -181,7 +176,7 @@ export default function ResultDashboard({
                   />
                   <StatCard
                     label="R&D 비용 절감"
-                    value={formatWon(result.biotech.savedRDCost)}
+                    value={formatCurrency(result.biotech.savedRDCost, result.currency)}
                     accent="#0ca30c"
                   />
                   <StatCard
@@ -191,7 +186,7 @@ export default function ResultDashboard({
                   />
                   <StatCard
                     label="투자 회수"
-                    value={`${result.paybackMonths}개월`}
+                    value={formatPaybackPeriod(result.paybackMonths)}
                     accent="#eb6834"
                   />
                 </div>
@@ -220,19 +215,16 @@ export default function ResultDashboard({
                   />
                 </div>
 
-                <BeforeAfterChart
-                  currentPct={customer.clinicalSuccessRate ?? 0}
-                  afterPct={result.biotech.afterClinicalSuccess}
-                />
-
                 <SavingsChart
                   monthlyData={result.monthlyData}
                   paybackMonths={result.paybackMonths}
+                  currency={result.currency}
                 />
 
                 <PaybackChart
                   monthlySavings={result.biotech.savedRDCost / 12}
                   fee={result.monthlyFee}
+                  currency={result.currency}
                 />
               </>
             ) : (
@@ -240,12 +232,12 @@ export default function ResultDashboard({
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <StatCard
                     label="연 매출 증가"
-                    value={formatWon(result.revenueIncrease)}
+                    value={formatCurrency(result.revenueIncrease, result.currency)}
                     accent="#06402B"
                   />
                   <StatCard
                     label="인당 생산성 향상"
-                    value={formatWon(result.productivityPerRep)}
+                    value={formatCurrency(result.productivityPerRep, result.currency)}
                     accent="#0ca30c"
                   />
                   <StatCard
@@ -255,7 +247,7 @@ export default function ResultDashboard({
                   />
                   <StatCard
                     label="투자 회수"
-                    value={`${result.paybackMonths}개월`}
+                    value={formatPaybackPeriod(result.paybackMonths)}
                     accent="#eb6834"
                   />
                 </div>
@@ -276,8 +268,8 @@ export default function ResultDashboard({
                   />
                   <CompareRow
                     label="평균 딜 규모"
-                    before={formatWon((customer.avgDealSize ?? 0) * rate)}
-                    after={formatWon(result.afterDealSize)}
+                    before={formatCurrency(customer.avgDealSize ?? 0, result.currency)}
+                    after={formatCurrency(result.afterDealSize, result.currency)}
                   />
                   <CompareRow
                     label="딜 사이클 기간"
@@ -286,19 +278,18 @@ export default function ResultDashboard({
                   />
                 </div>
 
-                <BeforeAfterChart
-                  currentPct={customer.closeRate ?? 0}
-                  afterPct={result.afterCloseRate}
-                />
+                <BeforeAfterChart result={result} />
 
                 <SavingsChart
                   monthlyData={result.monthlyData}
                   paybackMonths={result.paybackMonths}
+                  currency={result.currency}
                 />
 
                 <PaybackChart
                   monthlySavings={result.revenueIncrease / 12}
                   fee={result.monthlyFee}
+                  currency={result.currency}
                 />
               </>
             )}

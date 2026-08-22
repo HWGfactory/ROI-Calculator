@@ -84,6 +84,8 @@ export interface ROIResult {
     label: string;
   }[];
 
+  currency: string;
+
   // BioTech 전용 결과
   isBioTech: boolean;
   biotech?: {

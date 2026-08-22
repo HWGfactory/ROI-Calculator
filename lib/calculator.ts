@@ -1,9 +1,4 @@
-import {
-  BIOTECH_BENCHMARK,
-  CATEGORY_BENCHMARKS,
-  DEFAULT_EXCHANGE_RATES,
-  SIZE_MULTIPLIER,
-} from './constants';
+import { BIOTECH_BENCHMARK, CATEGORY_BENCHMARKS, SIZE_MULTIPLIER } from './constants';
 import { CustomerInput, ROIResult, SolutionInfo } from './types';
 
 export function calculateROI(
@@ -12,9 +7,6 @@ export function calculateROI(
 ): ROIResult {
   const sizeMultiplier = SIZE_MULTIPLIER[customer.companySize];
   const isBioTech = solution.category === 'biotech';
-
-  // 환율 기준 (KRW로 통일 계산)
-  const rate = DEFAULT_EXCHANGE_RATES[customer.currency] ?? 1;
 
   // ── BioTech 전용 계산 ──────────────────────────
   if (isBioTech) {
@@ -28,12 +20,12 @@ export function calculateROI(
     const bm = BIOTECH_BENCHMARK;
     const fee = bm.monthlyFee;
 
-    const budgetKRW = annualRDbudget * rate;
+    const budgetBase = annualRDbudget;
 
     const afterDiscovery =
       discoveryPeriodYears * (1 - bm.discoveryPeriodReduction * sizeMultiplier);
     const savedYears = discoveryPeriodYears - afterDiscovery;
-    const savedRDCost = budgetKRW * bm.rdCostReduction;
+    const savedRDCost = budgetBase * bm.rdCostReduction;
     const afterClinical = Math.min(
       clinicalSuccessRate + bm.clinicalSuccessIncrease * 100 * sizeMultiplier,
       90
@@ -70,6 +62,7 @@ export function calculateROI(
       paybackMonths,
       monthlyData: monthlyData.map((d) => ({ ...d, label: `${d.month}월` })),
       isBioTech: true,
+      currency: customer.currency,
       biotech: {
         afterDiscoveryPeriod: afterDiscovery,
         savedYears,
@@ -97,11 +90,11 @@ export function calculateROI(
     salesTeamSize = 1,
   } = customer;
 
-  const dealSizeKRW = avgDealSize * rate;
+  const dealSizeBase = avgDealSize;
 
   // 현재 연간 매출
   const currentAnnualRevenue =
-    monthlyDeals * dealSizeKRW * (closeRate / 100) * 12;
+    monthlyDeals * dealSizeBase * (closeRate / 100) * 12;
 
   // 도입 후 각 지표
   const dealsMultiplier = 1 + bm.dealsIncrease * sizeMultiplier;
@@ -111,7 +104,7 @@ export function calculateROI(
 
   const afterDeals = monthlyDeals * dealsMultiplier;
   const afterCloseRate = Math.min(closeRate * closeRateMultiplier, 90);
-  const afterDealSize = dealSizeKRW * dealSizeMultiplier;
+  const afterDealSize = dealSizeBase * dealSizeMultiplier;
   const afterCycleDays = Math.max(dealCycleDays * cycleDaysMultiplier, 1);
 
   // 도입 후 연간 매출
@@ -172,5 +165,30 @@ export function calculateROI(
     paybackMonths,
     monthlyData,
     isBioTech: false,
+    currency: customer.currency,
   };
+}
+
+export function getCurrencySymbol(currency: string): string {
+  const symbols: Record<string, string> = {
+    KRW: '₩',
+    USD: '$',
+    EUR: '€',
+    JPY: '¥',
+  };
+  return symbols[currency] ?? '₩';
+}
+
+export function formatCurrency(amount: number, currency: string): string {
+  const symbol = getCurrencySymbol(currency);
+  return `${symbol}${Math.round(amount).toLocaleString()}`;
+}
+
+export function formatPaybackPeriod(months: number): string {
+  if (months < 12) return `${months}개월`;
+
+  const years = Math.floor(months / 12);
+  const remainingMonths = months % 12;
+
+  return remainingMonths === 0 ? `${years}년` : `${years}년 ${remainingMonths}개월`;
 }
