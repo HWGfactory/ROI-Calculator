@@ -49,7 +49,7 @@ B2B SaaS 영업 현장에서 AE(Account Executive)가 가장 어려운 순간 �
 
 ---
 
-### Step 2 — 고객사 현황 입력
+### Step 2 : 고객사 현황 입력
 
 [고객사 입력 화면]
 
@@ -81,7 +81,7 @@ B2B SaaS 영업 현장에서 AE(Account Executive)가 가장 어려운 순간 �
 
 ---
 
-### Step 3 — ROI 결과 대시보드
+### Step 3 : ROI 결과 대시보드
 
 [결과 화면]
 
